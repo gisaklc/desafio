@@ -71,7 +71,6 @@ public class PlanetaControllerTest {
     public void buscarPorNomeTest() {
         planeta = criarPlaneta();
         controller.salvar(planeta);
-
         ResponseEntity<Planeta> r1 = controller.buscarPorNome("Tatooine");
 
        assertEquals("Tatooine", r1.getBody().getNome());
