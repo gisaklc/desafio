@@ -123,7 +123,7 @@ public class PlanetaController {
 
 			planeta.setId(id);
 
-			if (verificarExistencia(planeta, 2)) {
+			if (verificarExistencia(planeta, Constantes.ALTERAR)) {
 				return new ResponseEntity(Constantes.PLANETA_JA_CADASTRADO, HttpStatus.FORBIDDEN);
 			}
 
