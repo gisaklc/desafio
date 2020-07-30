@@ -1,5 +1,6 @@
 package com.desafiob2w.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -32,35 +33,24 @@ public class PlanetaController {
 	private final PlanetaService planetaService;
 	private final ResultApi apiExterna;
 
+	private List<Planeta> planetaList = new ArrayList<Planeta>();
+	
+	
 	@PostMapping
 	public ResponseEntity<Planeta> salvar(@RequestBody Planeta planeta) {
 
-		Planeta p;
-
-		boolean existe = false;
-
-		List<Planeta> planetaList = (List<Planeta>) buscarTodos().getBody();
-
-		if (planetaList.isEmpty()) {
-
-			p = planetaService.salvar(planeta);
-
-			buscarQtdDeAparicoes(p);
-
-			return new ResponseEntity(p, HttpStatus.CREATED);
-		}
-
-		if (verificarExistencia(planeta, 1)) {
-			return new ResponseEntity(Constantes.PLANETA_JA_CADASTRADO, HttpStatus.FORBIDDEN);
-		}
-
-		p = planetaService.salvar(planeta);
+		 if (verificarExistencia(planeta, Constantes.INCLUIR)) {
+				return new ResponseEntity(Constantes.PLANETA_JA_CADASTRADO, HttpStatus.FORBIDDEN);
+			}
+		 
+		Planeta p = planetaService.salvar(planeta);
 
 		buscarQtdDeAparicoes(p);
 
 		return new ResponseEntity(p, HttpStatus.CREATED);
 
 	}
+	
 
 	@GetMapping("/{id}")
 	public ResponseEntity buscarPorId(@PathVariable Long id) {
@@ -168,24 +158,32 @@ public class PlanetaController {
 
 		boolean existe = false;
 
-		List<Planeta> planetaList = (List<Planeta>) buscarTodos().getBody();
+		planetaList = (List<Planeta>) buscarTodos().getBody();
 
-		for (Planeta planeta1 : planetaList) {
+		if (!planetaList.isEmpty()) {
 
-			if (acao != 1) {
-				if (!planeta1.getId().equals(p.getId()) 
-						&& planeta1.getNome().equalsIgnoreCase(p.getNome())) {
-					existe = true;
-					break;
+			for (Planeta planeta1 : planetaList) {
+
+				if (acao == Constantes.INCLUIR) {
+					if (!planeta1.getId().equals(p.getId()) 
+							&& planeta1.getNome().equalsIgnoreCase(p.getNome())) {
+						existe = true;
+						break;
+					}
 				}
-			} else {
-				if (planeta1.getNome().equals(p.getNome())) {
-					existe = true;
-					break;
+				if (acao == Constantes.ALTERAR) {
+					if (planeta1.getNome().equals(p.getNome())) {
+						existe = true;
+						break;
+					}
 				}
 			}
 		}
 		return existe;
-	}
 
+	}
+	
+	
+	
+	
 }
